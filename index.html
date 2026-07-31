@@ -5,20 +5,168 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Radio Hindustaan</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; background-color: #f4f4f4; padding: 50px; }
-        h1 { color: #ff6600; }
-        .player-container { margin-top: 30px; background: white; padding: 20px; border-radius: 10px; display: inline-block; box-shadow: 0px 0px 10px rgba(0,0,0,0.1); }
+        body {
+            background-color: #fcfcfc;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        h1 {
+            color: #ff6600;
+            font-size: 24px;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+        
+        p {
+            color: #333;
+            font-size: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .radio-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .exclusive-player {
+            position: relative;
+            z-index: 2;
+            background: linear-gradient(135deg, #FF6B4A, #FF8E53);
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 10px 25px rgba(255, 107, 74, 0.4);
+        }
+
+        .play-trigger {
+            background: white;
+            border: none;
+            color: #FF6B4A;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            padding-left: 5px;
+        }
+
+        .play-trigger:hover {
+            transform: scale(1.08);
+        }
+
+        .volume-container {
+            display: flex;
+            align-items: center;
+            margin-top: 12px;
+            gap: 5px;
+        }
+
+        .vol-icon {
+            font-size: 12px;
+            color: white;
+        }
+
+        #volumeSlider {
+            width: 60px;
+            accent-color: white;
+            cursor: pointer;
+        }
+
+        .pulse-ring {
+            position: absolute;
+            width: 140px;
+            height: 140px;
+            border: 2px solid #FF8E53;
+            border-radius: 50%;
+            opacity: 0;
+            z-index: 1;
+        }
+
+        .playing #ring1 {
+            animation: pulse 2s infinite ease-out;
+        }
+        .playing #ring2 {
+            animation: pulse 2s infinite ease-out 1s;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.6;
+            }
+            100% {
+                transform: scale(1.6);
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 <body>
+
     <h1>Radio Hindustaan में आपका स्वागत है</h1>
     <p>हमारा ऑनलाइन एफ़एम रेडियो जल्द ही पूरी तरह लाइव होने वाला है!</p>
-    <div class="player-container">
-        <audio controls autoplay>
-    <source src="https://cyphedanzaeradio.com" type="audio/mpeg">
-    आपका ब्राउज़र इस प्लेयर को सपोर्ट नहीं करता है।
-</audio>
 
+    <div class="radio-container">
+        <div class="pulse-ring" id="ring1"></div>
+        <div class="pulse-ring" id="ring2"></div>
+        
+        <div class="exclusive-player">
+            <button id="playBtn" class="play-trigger">▶</button>
+            
+            <div class="volume-container">
+                <span class="vol-icon">🔊</span>
+                <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="1">
+            </div>
+        </div>
+        
+        <audio id="radioAudio" src="https://cyphedanzaeradio.com"></audio>
     </div>
+
+    <script>
+        const audio = document.getElementById('radioAudio');
+        const playBtn = document.getElementById('playBtn');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const container = document.querySelector('.radio-container');
+
+        playBtn.addEventListener('click', () => {
+            if (audio.paused) {
+                audio.play().catch(err => console.log("Error:", err));
+                playBtn.innerText = '⏸';
+                playBtn.style.paddingLeft = '0px';
+                container.classList.add('playing');
+            } else {
+                audio.pause();
+                playBtn.innerText = '▶';
+                playBtn.style.paddingLeft = '5px';
+                container.classList.remove('playing');
+            }
+        });
+
+        volumeSlider.addEventListener('input', (e) => {
+            audio.volume = e.target.value;
+        });
+    </script>
+
 </body>
 </html>
+
