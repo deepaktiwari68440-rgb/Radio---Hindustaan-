@@ -3,170 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Radio Hindustaan</title>
+    <title>Radio Hindustaan - My Playlist</title>
     <style>
-        body {
-            background-color: #fcfcfc;
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-
-        h1 {
-            color: #ff6600;
-            font-size: 24px;
-            text-align: center;
-            margin-bottom: 5px;
-        }
-        
-        p {
-            color: #333;
-            font-size: 15px;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .radio-container {
-            position: relative;
-            width: 200px;
-            height: 200px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .exclusive-player {
-            position: relative;
-            z-index: 2;
-            background: linear-gradient(135deg, #FF6B4A, #FF8E53);
-            width: 140px;
-            height: 140px;
-            border-radius: 50%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 10px 25px rgba(255, 107, 74, 0.4);
-        }
-
-        .play-trigger {
-            background: white;
-            border: none;
-            color: #FF6B4A;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            font-size: 24px;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-            padding-left: 5px;
-        }
-
-        .play-trigger:hover {
-            transform: scale(1.08);
-        }
-
-        .volume-container {
-            display: flex;
-            align-items: center;
-            margin-top: 12px;
-            gap: 5px;
-        }
-
-        .vol-icon {
-            font-size: 12px;
-            color: white;
-        }
-
-        #volumeSlider {
-            width: 60px;
-            accent-color: white;
-            cursor: pointer;
-        }
-
-        .pulse-ring {
-            position: absolute;
-            width: 140px;
-            height: 140px;
-            border: 2px solid #FF8E53;
-            border-radius: 50%;
-            opacity: 0;
-            z-index: 1;
-        }
-
-        .playing #ring1 {
-            animation: pulse 2s infinite ease-out;
-        }
-        .playing #ring2 {
-            animation: pulse 2s infinite ease-out 1s;
-        }
-
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-                opacity: 0.6;
-            }
-            100% {
-                transform: scale(1.6);
-                opacity: 0;
-            }
-        }
+        body { font-family: sans-serif; text-align: center; background: #121212; color: white; padding: 20px; }
+        .player-box { background: #222; padding: 30px; border-radius: 15px; max-width: 400px; margin: 30px auto; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        h2 { color: #ff4757; }
+        audio { width: 100%; margin-top: 20px; }
+        #now-playing { margin-top: 10px; font-size: 14px; color: #2ed573; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <h1>Radio Hindustaan में आपका स्वागत है</h1>
-    <p>हमारा ऑनलाइन एफ़एम रेडियो जल्द ही पूरी तरह लाइव होने वाला है!</p>
-
-    <div class="radio-container">
-        <div class="pulse-ring" id="ring1"></div>
-        <div class="pulse-ring" id="ring2"></div>
+    <div class="player-box">
+        <h2>📻 Radio Hindustaan Live</h2>
+        <p>Aapka Apna Non-Stop Radio Station</p>
         
-        <div class="exclusive-player">
-            <button id="playBtn" class="play-trigger">▶</button>
-            
-            <div class="volume-container">
-                <span class="vol-icon">🔊</span>
-                <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="1">
-            </div>
-        </div>
+        <div id="now-playing">Gaana Load Ho Raha Hai...</div>
         
-        <audio id="radioAudio" src="https://cyphedanzaeradio.com"></audio>
+        <!-- Audio Player Jo Gaane Bajayea -->
+        <audio id="radio-player" controls autoplay></audio>
     </div>
 
     <script>
-        const audio = document.getElementById('radioAudio');
-        const playBtn = document.getElementById('playBtn');
-        const volumeSlider = document.getElementById('volumeSlider');
-        const container = document.querySelector('.radio-container');
-
-        playBtn.addEventListener('click', () => {
-            if (audio.paused) {
-                audio.play().catch(err => console.log("Error:", err));
-                playBtn.innerText = '⏸';
-                playBtn.style.paddingLeft = '0px';
-                container.classList.add('playing');
-            } else {
-                audio.pause();
-                playBtn.innerText = '▶';
-                playBtn.style.paddingLeft = '5px';
-                container.classList.remove('playing');
+        // YAHA APNE GAANO KE DIRECT LINKS DALEIN
+        const playlist = [
+            {
+                title: "Gaana 1 - Super Hit Song",
+                url: "YAHA_APNE_PAHLE_GAANE_KA_DIRECT_LINK_DALEIN"
+            },
+            {
+                title: "Gaana 2 - Romantic Hit",
+                url: "YAHA_APNY_DUSRE_GAANE_KA_DIRECT_LINK_DALEIN"
+            },
+            {
+                title: "Gaana 3 - New Track",
+                url: "YAHA_APNE_TEESRE_GAANE_KA_DIRECT_LINK_DALEIN"
             }
-        });
+        ];
 
-        volumeSlider.addEventListener('input', (e) => {
-            audio.volume = e.target.value;
-        });
+        let currentTrackIndex = 0;
+        const player = document.getElementById('radio-player');
+        const statusText = document.getElementById('now-playing');
+
+        function playTrack(index) {
+            if(playlist.length === 0) return;
+            currentTrackIndex = index;
+            player.src = playlist[index].url;
+            statusText.innerText = "Abhi Chal Raha Hai: 🎵 " + playlist[index].title;
+            player.play().catch(err => {
+                statusText.innerText = "Play Button Par Click Karein ▶️";
+            });
+        }
+
+        // Jab ek gaana khatam ho, toh agla apne aap shuru ho jaye
+        player.onended = function() {
+            let nextIndex = currentTrackIndex + 1;
+            if (nextIndex >= playlist.length) {
+                nextIndex = 0; // Playlist khatam hone par wapas pehle gaane se shuru ho
+            }
+            playTrack(nextIndex);
+        };
+
+        // Radio shuru karne ke liye
+        window.onload = function() {
+            playTrack(0);
+        };
     </script>
-
 </body>
 </html>
-
