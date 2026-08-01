@@ -12,7 +12,8 @@
         .disc-container { width: 150px; height: 150px; margin: 0 auto 25px; position: relative; }
         .disc { width: 100%; height: 100%; border-radius: 50%; background: radial-gradient(circle, #475569 10%, #0f172a 11%, #000 30%, #1e293b 70%, #000 100%); box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 3px solid #334155; }
         #now-playing { font-size: 15px; color: #38bdf8; font-weight: 600; margin-bottom: 20px; min-height: 22px; }
-        audio { width: 100%; border-radius: 30px; outline: none; }
+        /* Custom Native Controls configuration to bypass browser override */
+        audio { width: 100%; border-radius: 30px; outline: none; display: block; margin: 0 auto; }
     </style>
 </head>
 <body>
@@ -25,47 +26,24 @@
             <div class="disc" id="vinyl-disc"></div>
         </div>
         
-        <div id="now-playing">Gaana Load Ho Raha Hai...</div>
-        <audio id="radio-player" controls autoplay></audio>
+        <div id="now-playing">Radio Hindustaan Hits</div>
+        
+        <!-- Standard configuration with direct controls fallback -->
+        <audio id="radio-player" controls preload="auto">
+            <source src="https://catbox.moe" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
     </div>
 
     <script>
-        const playlist = [
-            {
-                title: "Radio Hindustaan Hits 1",
-                url: "https://  url: "https://soundhelix.com"/uunij0.mp3"
-            },     {
-        title: "Radio Hindustaan Hits 2",
-        url: "https://files.catbox.moe/aki91l.mp3"
-    
-
-        ];
-
-        let currentTrackIndex = 0;
         const player = document.getElementById('radio-player');
-        const statusText = document.getElementById('now-playing');
-
-        function playTrack(index) {
-            if (playlist.length === 0) return;
-            currentTrackIndex = index;
-            player.src = playlist[index].url;
-            statusText.innerText = playlist[index].title;
-            
-            player.play().catch(err => {
-                statusText.innerText = "▶ Play Button Dabayein";
-            });
-        }
-
-        player.onended = function() {
-            let nextIndex = currentTrackIndex + 1;
-            if (nextIndex >= playlist.length) { nextIndex = 0; }
-            playTrack(nextIndex);
-        };
-
+        
+        // Safety trigger to force reload on worker environments
         window.onload = function() {
-            playTrack(0);
+            player.load();
         };
     </script>
 </body>
 </html>
+
 
