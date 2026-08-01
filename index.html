@@ -30,12 +30,10 @@
     </div>
 
     <script>
-        // 🛠️ YAHA APNA IMAGE2URL WALA LINK BADAL SAKTE HAIN
         const playlist = [
             {
-                title: "Krishna Krishna Bol Pyare",
-                url: url: "https://soundhelix.com"
-
+                title: "Radio Hindustaan Non-Stop Hits",
+                url: "https://soundhelix.com"
             }
         ];
 
@@ -54,19 +52,16 @@
             });
         }
 
-        // Gaana khatam hone par agla gaana chalayein
         player.onended = function() {
             let nextIndex = currentTrackIndex + 1;
-            if (nextIndex >= playlist.length) {
-                nextIndex = 0; 
-            }
+            if (nextIndex >= playlist.length) { nextIndex = 0; }
             playTrack(nextIndex);
         };
 
-        // Page load hote hi pehla gaana bajayein
         window.onload = function() {
             playTrack(0);
         };
     </script>
 </body>
 </html>
+
