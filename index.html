@@ -3,58 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Radio Hindustaan - Premium Player</title>
+    <title>Radio Hindustaan - Non-Stop Premium Radio</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { 
-            font-family: 'Poppins', sans-serif; 
-            text-align: center; 
-            background: linear-gradient(135deg, #0f172a, #1e1b4b); 
-            color: white; 
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        .player-box { 
-            background: rgba(30, 41, 59, 0.7); 
-            backdrop-filter: blur(10px);
-            padding: 35px 25px; 
-            border-radius: 30px; 
-            width: 100%;
-            max-width: 360px; 
-            box-shadow: 0 20px 40px rgba(0,0,0,0.6), inset 0 1px 2px rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-        h2 { color: #f43f5e; font-size: 24px; margin-bottom: 5px; text-shadow: 0 0 10px rgba(244,63,94,0.3); }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #121626; color: #fff; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .player-box { background: #1a2238; border-radius: 20px; padding: 30px; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.6); border: 1px solid #2d3748; }
+        h2 { color: #f43f5e; font-size: 24px; margin-bottom: 5px; }
         .subtitle { font-size: 12px; color: #94a3b8; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 25px; }
-        
-        /* Rotating CD Animation */
         .disc-container { width: 150px; height: 150px; margin: 0 auto 25px; position: relative; }
-        .disc { 
-            width: 100%; height: 100%; 
-            border-radius: 50%; 
-            background: radial-gradient(circle, #475569 10%, #0f172a 11%, #000 30%, #1e293b 70%, #000 100%)
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            border: 3px solid #334155;
-            display: flex; align-items: center; justify-content: center;
-            animation: rotateDisc 5s linear infinite;
-            animation-play-state: paused;
-        }
-        .disc::after { content: ''; width: 25px; height: 25px; background: #0f172a; border-radius: 50%; border: 2px solid #64748b; }
-        
-        @keyframes rotateDisc { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        
+        .disc { width: 100%; height: 100%; border-radius: 50%; background: radial-gradient(circle, #475569 10%, #0f172a 11%, #000 30%, #1e293b 70%, #000 100%); box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 3px solid #334155; }
         #now-playing { font-size: 15px; color: #38bdf8; font-weight: 600; margin-bottom: 20px; min-height: 22px; }
-        
-        audio { 
-            width: 100%; 
-            border-radius: 30px; 
-            outline: none;
-            filter: drop-shadow(0px 5px 10px rgba(0,0,0,0.3));
-        }
+        audio { width: 100%; border-radius: 30px; outline: none; }
     </style>
 </head>
 <body>
@@ -63,59 +21,48 @@
         <h2>Radio Hindustaan</h2>
         <div class="subtitle">Non-Stop Premium Radio</div>
         
-        <!-- Animated Music Disc -->
         <div class="disc-container">
             <div class="disc" id="vinyl-disc"></div>
         </div>
         
         <div id="now-playing">Gaana Load Ho Raha Hai...</div>
-        
-        <!-- Smart Audio Player -->
         <audio id="radio-player" controls autoplay></audio>
     </div>
 
     <script>
-        // YAHA APNE GAANE KA CATBOX VALA LINK PASTE KAREIN
+        // 🛠️ YAHA APNA IMAGE2URL WALA LINK BADAL SAKTE HAIN
+        const playlist = [
+            {
+                title: "Krishna Krishna Bol Pyare",
+                url: "https://  https://www.image2url.com/r2/default/audio/1785572040275-622 "
+            }
+        ];
 
-
-const       const playlist = [
-  {
-    title: "Krishna Krishna Bol Pyare",
-    url: " https://www.image2url.com/r2/default/audio/1785572040275-622a766e-5d78-467e-8bf9-0099ba53e49e.mp3 "
-  }
-];
-
-];
-
-        
-let currentTrackIndex = 0;
+        let currentTrackIndex = 0;
         const player = document.getElementById('radio-player');
         const statusText = document.getElementById('now-playing');
-        const disc = document.getElementById('vinyl-disc');
 
         function playTrack(index) {
-            if(playlist.length === 0) return;
+            if (playlist.length === 0) return;
             currentTrackIndex = index;
             player.src = playlist[index].url;
             statusText.innerText = playlist[index].title;
-            player.play().then(() => {
-                disc.style.animationPlayState = 'running';
-            }).catch(err => {
-                statusText.innerText = "▶️ Play Button Dabayein";
-                disc.style.animationPlayState = 'paused';
+            
+            player.play().catch(err => {
+                statusText.innerText = "▶ Play Button Dabayein";
             });
         }
 
-        // Play/Pause hone par Disc ka ghumna control karein
-        player.onplay = () => disc.style.animationPlayState = 'running';
-        player.onpause = () => disc.style.animationPlayState = 'paused';
-
+        // Gaana khatam hone par agla gaana chalayein
         player.onended = function() {
             let nextIndex = currentTrackIndex + 1;
-            if (nextIndex >= playlist.length) { nextIndex = 0; }
+            if (nextIndex >= playlist.length) {
+                nextIndex = 0; 
+            }
             playTrack(nextIndex);
         };
 
+        // Page load hote hi pehla gaana bajayein
         window.onload = function() {
             playTrack(0);
         };
