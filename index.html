@@ -11,11 +11,10 @@
             --accent-color: #38bdf8;
             --text-color: #f8fafc;
         }
-
         body {
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
             display: flex;
@@ -23,7 +22,6 @@
             align-items: center;
             height: 100vh;
         }
-
         .radio-container {
             background: var(--card-bg);
             padding: 30px;
@@ -32,15 +30,14 @@
             text-align: center;
             width: 320px;
             border: 1px solid rgba(255, 255, 255, 0.1);
+            box-sizing: border-box;
         }
-
         .station-title {
             font-size: 24px;
             margin-bottom: 5px;
             font-weight: bold;
             color: var(--accent-color);
         }
-
         .status-tag {
             font-size: 12px;
             background: #ef4444;
@@ -50,10 +47,7 @@
             display: inline-block;
             margin-bottom: 20px;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            animation: blink 1.5s infinite;
         }
-
         .vinyl-disk {
             width: 150px;
             height: 150px;
@@ -61,35 +55,25 @@
             background: radial-gradient(circle, #000 30%, #333 31%, #111 60%, #000 70%);
             margin: 0 auto 25px auto;
             border: 5px solid var(--accent-color);
-            box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
             display: flex;
             justify-content: center;
             align-items: center;
         }
-
         .vinyl-center {
             width: 40px;
             height: 40px;
             background-color: var(--accent-color);
             border-radius: 50%;
         }
-
         .rotate {
             animation: spin 3s linear infinite;
         }
-
         @keyframes spin {
             100% { transform: rotate(360deg); }
         }
-
-        @keyframes blink {
-            50% { opacity: 0.5; }
-        }
-
         .controls {
             margin-bottom: 20px;
         }
-
         .btn-play {
             background: var(--accent-color);
             border: none;
@@ -99,22 +83,8 @@
             font-weight: bold;
             border-radius: 30px;
             cursor: pointer;
-            transition: all 0.3s ease;
             width: 100%;
         }
-        <!-- Hidden Audio Element -->
-<audio id="radioPlayer" preload="none">
-    <!-- 🔴 PURANE LINK KO HATA KAR APNA CATBOX LINK NEECHE PASTE KAREIN -->
-    <source src="https://files.catbox.moe/uunij0.mp3" type="audio/mpeg">
-    Aapka browser audio support nahi karta.
-</audio>
-
-
-        .btn-play:hover {
-            transform: scale(1.03);
-            box-shadow: 0 0 15px var(--accent-color);
-        }
-
         .volume-container {
             display: flex;
             align-items: center;
@@ -123,11 +93,9 @@
             padding: 10px 15px;
             border-radius: 10px;
         }
-
         .volume-slider {
             width: 80%;
             accent-color: var(--accent-color);
-            cursor: pointer;
         }
     </style>
 </head>
@@ -137,22 +105,19 @@
         <div class="station-title">My FM Radio</div>
         <div class="status-tag" id="status">Live</div>
 
-        <!-- Rotating Vinyl Disk Graphic -->
-        
+        <div class="vinyl-disk" id="disk">
             <div class="vinyl-center"></div>
         </div>
 
-        <!-- Hidden Audio Element -->
         <audio id="radioPlayer" preload="none">
             <source src="https://files.catbox.moe/uunij0.mp3" type="audio/mpeg">
+            Aapka browser audio support nahi karta.
         </audio>
 
-        <!-- Controls -->
         <div class="controls">
             <button class="btn-play" id="playBtn">▶ PLAY</button>
         </div>
 
-        <!-- Volume -->
         <div class="volume-container">
             <span>🔊</span>
             <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.1" value="0.8">
@@ -166,14 +131,8 @@
         const volumeSlider = document.getElementById('volumeSlider');
         const statusTag = document.getElementById('status');
 
-        // Play/Pause Logic specifically optimized for Live Streams & Catbox
         playBtn.addEventListener('click', function() {
             if (audio.paused) {
-                // Live stream refresh logic to avoid cache lag
-                if(audio.readyState === 0) {
-                    audio.load(); 
-                }
-                
                 audio.play()
                     .then(() => {
                         playBtn.innerText = '⏸ PAUSE';
@@ -182,22 +141,20 @@
                         statusTag.innerText = 'Playing';
                     })
                     .catch(error => {
-                        alert('Audio play nahi ho saka. Kripya apna Catbox link check karein.');
-                        console.error("Playback error:", error);
+                        alert('Play nahi ho saka. Kripya link check karein.');
                     });
             } else {
                 audio.pause();
                 playBtn.innerText = '▶ PLAY';
                 disk.classList.remove('rotate');
                 statusTag.style.background = '#ef4444';
-                statusTag.innerText = 'Paused';
+                statusTag.innerText = 'Live';
             }
         });
 
-        // Volume Control
         volumeSlider.addEventListener('input', function(e) {
             audio.volume = e.target.value;
         });
-    </style>
+    </script>
 </body>
 </html>
