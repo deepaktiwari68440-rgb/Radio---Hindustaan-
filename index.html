@@ -1,4 +1,5 @@
-<!DOCTYPE html>
+
+            <!DOCTYPE html>
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
@@ -110,7 +111,6 @@
             width: 85%;
             accent-color: var(--accent-color);
         }
-        /* Playlist List Styles */
         .playlist-header {
             text-align: left;
             font-size: 16px;
@@ -149,7 +149,6 @@
             color: var(--accent-color);
             font-weight: bold;
         }
-        /* Scrollbar Design */
         .playlist-box::-webkit-scrollbar {
             width: 5px;
         }
@@ -180,11 +179,8 @@
             <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.1" value="0.8">
         </div>
 
-        <!-- Dynamic Website Playlist View -->
         <div class="playlist-header">🎵 Select Song to Play:</div>
-        <div class="playlist-box" id="playlistView">
-            <!-- Gaano ki list yahan apne aap sheet se bankar aayegi -->
-        </div>
+        <div class="playlist-box" id="playlistView"></div>
     </div>
 
     <script>
@@ -202,46 +198,38 @@
         let playlist = [];
         let currentTrackIndex = 0;
 
-        // 🔴 IS LINE PAR APNI GOOGLE SHEET KA LINK DOUBLE QUOTES KE ANDAR PASTE KAREIN
-        const sheetUrl = "YAHAN_APNI_GOOGLE_SHEET_KA_LINK_PASTE_KAREIN";
+        // 🟢 AUTOMATIC SHEET ID SETUP (NO NEED TO CHANGE ANYTHING HERE)
+        const tsvUrl = "https://google.com";
 
         function loadPlaylist() {
-            try {
-                const sheetId = sheetUrl.split('/d/')[1].split('/')[0];
-                const tsvUrl = `https://google.com{sheetId}/pub?output=tsv`;
-
-                fetch(tsvUrl)
-                    .then(response => response.text())
-                    .then(text => {
-                        const rows = text.split('\n');
-                        playlist = rows.map(row => row.trim()).filter(row => row.startsWith('http'));
-                        
-                        if(playlist.length > 0) {
-                            renderPlaylistUI();
-                            changeTrack(0, false);
-                        } else {
-                            trackNoText.innerText = "No links found in sheet";
-                        }
-                    })
-                    .catch(err => {
-                        trackNoText.innerText = "Error loading list";
-                    });
-            } catch(e) {
-                trackNoText.innerText = "Invalid Sheet Link";
-            }
+            fetch(tsvUrl)
+                .then(response => response.text())
+                .then(text => {
+                    const rows = text.split('\n');
+                    playlist = rows.map(row => row.trim()).filter(row => row.startsWith('http'));
+                    
+                    if(playlist.length > 0) {
+                        renderPlaylistUI();
+                        changeTrack(0, false);
+                    } else {
+                        trackNoText.innerText = "Sheet khali hai. Links dalein!";
+                    }
+                })
+                .catch(err => {
+                    trackNoText.innerText = "Error loading list";
+                });
         }
 
-        // Website par gaano ki clickable list banane ka functional logic
         function renderPlaylistUI() {
             playlistView.innerHTML = "";
             playlist.forEach((link, index) => {
-                const fileName = link.substring(link.lastIndexOf('/') + 1);
+                let fileName = link.substring(link.lastIndexOf('/') + 1);
+                if(fileName.length > 25) fileName = fileName.substring(0, 22) + "...";
                 const item = document.createElement('div');
                 item.className = 'playlist-item';
                 item.id = `track-${index}`;
                 item.innerHTML = `<span>▶ Song ${index + 1} (${fileName})</span>`;
                 
-                // Kisi bhi gaane par click karte hi wohi play hoga
                 item.addEventListener('click', () => {
                     changeTrack(index, true);
                 });
@@ -250,14 +238,11 @@
         }
 
         function changeTrack(index, shouldPlay) {
-            // Purani active class hatayein
             document.querySelectorAll('.playlist-item').forEach(el => el.classList.remove('active'));
-            
             currentTrackIndex = index;
             audio.src = playlist[currentTrackIndex];
             trackNoText.innerText = `Track ${currentTrackIndex + 1} of ${playlist.length}`;
             
-            // Nayi active class jodein
             const activeItem = document.getElementById(`track-${index}`);
             if(activeItem) activeItem.classList.add('active');
 
@@ -289,3 +274,23 @@
                     })
                     .catch(error => alert('Gana play nahi ho saka!'));
             } else {
+                audio.pause();
+                playBtn.innerText = '▶ PLAY';
+                disk.classList.remove('rotate');
+            }
+        });
+
+        nextBtn.addEventListener('click', function() {
+            if (currentTrackIndex < playlist.length - 1) {
+                changeTrack(currentTrackIndex + 1, !audio.paused);
+            }
+        });
+
+        prevBtn.addEventListener('click', function() {
+            if (currentTrackIndex > 0) {
+                changeTrack(currentTrackIndex - 1, !audio.paused);
+            }
+        });
+
+        volumeSlider.addEventListener('input', function(e) {
+             
