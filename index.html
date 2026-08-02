@@ -197,30 +197,24 @@
         let playlist = [];
         let currentTrackIndex = 0;
 
-        // 🟢 NAYA CODESPATIAL LINK JO APNE AAP GOOGLE SHEET SE LINKS NIKAL LEGA
-        const sheetUrl = "https://google.com";
-
         function loadPlaylist() {
-            // Hum .pubhtml se hi direct fetch karke links filter kar lenge
-            fetch(sheetUrl)
-                .then(response => response.text())
-                .then(htmlText => {
-                    // Regular expression jo html page ke andar se hara/blue catbox link dhoondh nikalega
-                    const urlRegex = /https:\/\/files\.catbox\.moe\/[a-zA-Z0-9]+\.mp3/g;
-                    const matches = htmlText.match(urlRegex) || [];
-                    
-                    // Duplicate links hatane ke liye
-                    playlist = [...new Set(matches)];
-                    
+            // Local file playlist.json se direct secure data fetch karne ka code
+            fetch('playlist.json')
+                .then(response => {
+                    if (!response.ok) throw new Error('File nahi mili');
+                    return response.json();
+                })
+                .then(data => {
+                    playlist = data;
                     if(playlist.length > 0) {
                         renderPlaylistUI();
                         changeTrack(0, false);
                     } else {
-                        trackNoText.innerText = "Sheet khali hai, pehle links dalein!";
+                        trackNoText.innerText = "Playlist khali hai!";
                     }
                 })
                 .catch(err => {
-                    trackNoText.innerText = "Error loading tracks";
+                    trackNoText.innerText = "Error loading list";
                     console.error(err);
                 });
         }
@@ -287,4 +281,21 @@
 
         nextBtn.addEventListener('click', function() {
             if (currentTrackIndex < playlist.length - 1) {
+                changeTrack(currentTrackIndex + 1, !audio.paused);
+            }
+        });
 
+        prevBtn.addEventListener('click', function() {
+            if (currentTrackIndex > 0) {
+                changeTrack(currentTrackIndex - 1, !audio.paused);
+            }
+        });
+
+        volumeSlider.addEventListener('input', function(e) {
+            audio.volume = e.target.value;
+        });
+
+        loadPlaylist();
+    </script>
+</body>
+</html>
