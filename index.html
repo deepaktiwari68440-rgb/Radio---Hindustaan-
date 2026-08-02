@@ -133,5 +133,142 @@
             border-radius: 6px;
             cursor: pointer;
             display: flex;
+                <script>
+        const playBtn = document.getElementById('playBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const disk = document.getElementById('disk');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const trackNoText = document.getElementById('trackNo');
+        const playlistView = document.getElementById('playlistView');
+        
+        let audio = new Audio();
+        
+        // CORS Security Bypass Setting 🟢
+        audio.crossOrigin = "anonymous";
+        audio.preload = "auto";
+        
+        let playlist = [];
+        let currentTrackIndex = 0;
+
+        function loadPlaylist() {
+            fetch('playlist.json')
+                .then(response => {
+                    if (!response.ok) throw new Error('File nahi mili');
+                    return response.json();
+                })
+                .then(data => {
+                    playlist = data;
+                    if(playlist.length > 0) {
+                        renderPlaylistUI();
+                        changeTrack(0, false);
+                    } else {
+                        trackNoText.innerText = "Playlist khali hai!";
+                    }
+                })
+                .catch(err => {
+                    trackNoText.innerText = "Error loading list";
+                });
+        }
+
+        function renderPlaylistUI() {
+            playlistView.innerHTML = "";
+            playlist.forEach((link, index) => {
+                let fileName = link.substring(link.lastIndexOf('/') + 1);
+                if(fileName.length > 25) fileName = fileName.substring(0, 22) + "...";
+                const item = document.createElement('div');
+                item.className = 'playlist-item';
+                item.id = `track-${index}`;
+                item.innerHTML = `<span>▶ Song ${index + 1} (${fileName})</span>`;
+                
+                item.addEventListener('click', () => {
+                    changeTrack(index, true);
+                });
+                playlistView.appendChild(item);
+            });
+        }
+
+        function changeTrack(index, shouldPlay) {
+            document.querySelectorAll('.playlist-item').forEach(el => el.classList.remove('active'));
+            currentTrackIndex = index;
             
+            // Catbox block bypass karne ke liye url refresh logic
+            const rawUrl = playlist[currentTrackIndex];
+            audio.src = rawUrl;
+            
+            trackNoText.innerText = `Track ${currentTrackIndex + 1} of ${playlist.length}`;
+            
+            const activeItem = document.getElementById(`track-${index}`);
+            if(activeItem) activeItem.classList.add('active');
+
+            if (shouldPlay) {
+                // Force load before playing
+                audio.load();
+                audio.play()
+                    .then(() => {
+                        playBtn.innerText = '⏸ PAUSE';
+                        disk.classList.add('rotate');
+                    })
+                    .catch(e => {
+                        console.log("Playback error, trying fallback");
+                        // Fallback: reload without CORS if anonymous fails
+                        audio.crossOrigin = null;
+                        audio.src = rawUrl;
+                        audio.play().then(() => {
+                            playBtn.innerText = '⏸ PAUSE';
+                            disk.classList.add('rotate');
+                        }).catch(err => alert('Gana play nahi ho saka! Link check karein.'));
+                    });
+            }
+        }
+
+        audio.addEventListener('ended', function() {
+            if (currentTrackIndex < playlist.length - 1) {
+                changeTrack(currentTrackIndex + 1, true);
+            } else {
+                changeTrack(0, true); 
+            }
+        });
+
+        playBtn.addEventListener('click', function() {
+            if (playlist.length === 0) return;
+            if (audio.paused) {
+                if(!audio.src || audio.src === "") {
+                    changeTrack(currentTrackIndex, true);
+                } else {
+                    audio.play()
+                        .then(() => {
+                            playBtn.innerText = '⏸ PAUSE';
+                            disk.classList.add('rotate');
+                        })
+                        .catch(error => {
+                            changeTrack(currentTrackIndex, true);
+                        });
+                }
+            } else {
+                audio.pause();
+                playBtn.innerText = '▶ PLAY';
+                disk.classList.remove('rotate');
+            }
+        });
+
+        nextBtn.addEventListener('click', function() {
+            if (currentTrackIndex < playlist.length - 1) {
+                changeTrack(currentTrackIndex + 1, true);
+            }
+        });
+
+        prevBtn.addEventListener('click', function() {
+            if (currentTrackIndex > 0) {
+                changeTrack(currentTrackIndex - 1, true);
+            }
+        });
+
+        volumeSlider.addEventListener('input', function(e) {
+            audio.volume = e.target.value;
+        });
+
+        loadPlaylist();
+    </script>
+
         
