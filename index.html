@@ -128,12 +128,61 @@
             padding: 5px;
         }
         .playlist-item {
-            padding: 1h
+            padding: 10px;
             font-size: 13px;
             border-radius: 6px;
             cursor: pointer;
             display: flex;
-                <script>
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .playlist-item:hover {
+            background: var(--list-hover);
+        }
+        .playlist-item.active {
+            background: rgba(56, 189, 248, 0.2);
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+        .playlist-box::-webkit-scrollbar {
+            width: 5px;
+        }
+        .playlist-box::-webkit-scrollbar-thumb {
+            background: var(--accent-color);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="radio-container">
+        <div class="station-title">My FM Radio</div>
+        <div class="track-info" id="trackNo">Loading Tracks...</div>
+
+        <div class="vinyl-disk" id="disk">
+            <div class="vinyl-center"></div>
+        </div>
+
+        <div class="controls-row">
+            <button class="btn-side" id="prevBtn">⏮</button>
+            <button class="btn-play" id="playBtn">▶ PLAY</button>
+            <button class="btn-side" id="nextBtn">⏭</button>
+        </div>
+
+        <div class="volume-container">
+            <span>🔊</span>
+            <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.1" value="0.8">
+        </div>
+
+        <div class="playlist-header">🎵 Select Song to Play:</div>
+        <div class="playlist-box" id="playlistView"></div>
+    </div>
+
+    <script>
         const playBtn = document.getElementById('playBtn');
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
@@ -143,32 +192,23 @@
         const playlistView = document.getElementById('playlistView');
         
         let audio = new Audio();
-        
-        // CORS Security Bypass Setting 🟢
-        audio.crossOrigin = "anonymous";
         audio.preload = "auto";
         
-        let playlist = [];
+        // 🟢 ASLI LINKS DIRECT CODE KE ANDAR (YAHAN APNE GANON KE LINKS DALEIN)
+        let playlist = [
+            "https://catbox.moe",
+            "https://catbox.moe"
+        ];
+        
         let currentTrackIndex = 0;
 
-        function loadPlaylist() {
-            fetch('playlist.json')
-                .then(response => {
-                    if (!response.ok) throw new Error('File nahi mili');
-                    return response.json();
-                })
-                .then(data => {
-                    playlist = data;
-                    if(playlist.length > 0) {
-                        renderPlaylistUI();
-                        changeTrack(0, false);
-                    } else {
-                        trackNoText.innerText = "Playlist khali hai!";
-                    }
-                })
-                .catch(err => {
-                    trackNoText.innerText = "Error loading list";
-                });
+        function initPlayer() {
+            if(playlist.length > 0) {
+                renderPlaylistUI();
+                changeTrack(0, false);
+            } else {
+                trackNoText.innerText = "Playlist khali hai!";
+            }
         }
 
         function renderPlaylistUI() {
@@ -191,33 +231,20 @@
         function changeTrack(index, shouldPlay) {
             document.querySelectorAll('.playlist-item').forEach(el => el.classList.remove('active'));
             currentTrackIndex = index;
-            
-            // Catbox block bypass karne ke liye url refresh logic
-            const rawUrl = playlist[currentTrackIndex];
-            audio.src = rawUrl;
-            
+            audio.src = playlist[currentTrackIndex];
             trackNoText.innerText = `Track ${currentTrackIndex + 1} of ${playlist.length}`;
             
             const activeItem = document.getElementById(`track-${index}`);
             if(activeItem) activeItem.classList.add('active');
 
             if (shouldPlay) {
-                // Force load before playing
-                audio.load();
                 audio.play()
                     .then(() => {
                         playBtn.innerText = '⏸ PAUSE';
                         disk.classList.add('rotate');
                     })
                     .catch(e => {
-                        console.log("Playback error, trying fallback");
-                        // Fallback: reload without CORS if anonymous fails
-                        audio.crossOrigin = null;
-                        audio.src = rawUrl;
-                        audio.play().then(() => {
-                            playBtn.innerText = '⏸ PAUSE';
-                            disk.classList.add('rotate');
-                        }).catch(err => alert('Gana play nahi ho saka! Link check karein.'));
+                        alert("Play nahi ho saka! Link check karein.");
                     });
             }
         }
@@ -233,18 +260,14 @@
         playBtn.addEventListener('click', function() {
             if (playlist.length === 0) return;
             if (audio.paused) {
-                if(!audio.src || audio.src === "") {
-                    changeTrack(currentTrackIndex, true);
-                } else {
-                    audio.play()
-                        .then(() => {
-                            playBtn.innerText = '⏸ PAUSE';
-                            disk.classList.add('rotate');
-                        })
-                        .catch(error => {
-                            changeTrack(currentTrackIndex, true);
-                        });
-                }
+                audio.play()
+                    .then(() => {
+                        playBtn.innerText = '⏸ PAUSE';
+                        disk.classList.add('rotate');
+                    })
+                    .catch(error => {
+                        changeTrack(currentTrackIndex, true);
+                    });
             } else {
                 audio.pause();
                 playBtn.innerText = '▶ PLAY';
@@ -254,13 +277,13 @@
 
         nextBtn.addEventListener('click', function() {
             if (currentTrackIndex < playlist.length - 1) {
-                changeTrack(currentTrackIndex + 1, true);
+                changeTrack(currentTrackIndex + 1, !audio.paused);
             }
         });
 
         prevBtn.addEventListener('click', function() {
             if (currentTrackIndex > 0) {
-                changeTrack(currentTrackIndex - 1, true);
+                changeTrack(currentTrackIndex - 1, !audio.paused);
             }
         });
 
@@ -268,7 +291,7 @@
             audio.volume = e.target.value;
         });
 
-        loadPlaylist();
+        initPlayer();
     </script>
-
-        
+</body>
+</html>
