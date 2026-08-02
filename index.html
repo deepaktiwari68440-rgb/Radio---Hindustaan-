@@ -160,7 +160,7 @@
 <body>
 
     <div class="radio-container">
-        <div class="station-title">My FM Radio</div>
+        <div class="station-title">Radio Hindustaan</div>
         <div class="track-info" id="trackNo">Loading Tracks...</div>
 
         <div class="vinyl-disk" id="disk">
@@ -194,9 +194,8 @@
         let audio = new Audio();
         audio.preload = "auto";
         
-        // 🟢 ASLI LINKS DIRECT CODE KE ANDAR (YAHAN APNE GANON KE LINKS DALEIN)
+        // 🟢 GANON KE LINKS DIRECLTY CODE KE ANDAR (NO EXTERNAL FILE NEEDED)
         let playlist = [
-            "https://catbox.moe",
             "https://catbox.moe"
         ];
         
@@ -244,7 +243,7 @@
                         disk.classList.add('rotate');
                     })
                     .catch(e => {
-                        alert("Play nahi ho saka! Link check karein.");
+                        console.log("Playback error");
                     });
             }
         }
